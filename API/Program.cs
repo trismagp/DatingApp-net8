@@ -1,5 +1,6 @@
 
 using API.Extensions;
+using API;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ builder.Services.AddIdentityServices(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors(x =>
     x.AllowAnyHeader()
