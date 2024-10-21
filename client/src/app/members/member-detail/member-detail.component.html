@@ -47,13 +47,13 @@
                     <p>{{member.interests}}</p>
                 </tab>
                 <tab heading="Photos" #photoTab="tab">
-                    <p>photos will go here</p>
-                    <!-- <@if (photoTab.active) {
+                    @if (photoTab.active) {
+                        gallery 
                         <gallery 
                         [items]="images" 
                         class="gallery"
                     ></gallery>
-                    }> -->
+                    }
 
                 </tab>
                 <tab heading="Messages">
