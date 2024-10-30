@@ -6,6 +6,7 @@ using API.Interfaces;
 using System.Security.Claims;
 using API.Extensions;
 using API.Entities;
+using SQLitePCL;
 
 namespace API.Controllers;
 
@@ -46,16 +47,15 @@ public class UsersController(IUserRepository userRepository, IMapper mapper,IPho
 
         if (user == null) return BadRequest("Cannot update user");
 
-     //   var result = await photoService.AddPhotoAsync(file);
-        
-     //   if (result.Error != null) return BadRequest(result.Error.Message);
+        var result = await photoService.AddPhotoAsync(file);
+        // if (result.Error != null) return BadRequest(result.Error.Message);
 
         var photo = new Photo
         {
-            // Url = result.SecureUrl.AbsoluteUri,
-            // PublicId = result.PublicId
+            //  Url = result.SecureUrl.AbsoluteUri,
+            //  PublicId = result.PublicId
 
-            Url = "https://randomuser.me/api/portraits/men/186.jpg",
+            Url = "https://randomuser.me/api/portraits/women/15.jpg",
             PublicId = "21321321322sd"
         };
 
@@ -67,5 +67,26 @@ public class UsersController(IUserRepository userRepository, IMapper mapper,IPho
 
         return BadRequest("Problem adding photo");
     }
+
+    [HttpPut("set-main-photo/{photoId:int}")]
+    public async Task<ActionResult> SetMainPhoto(int photoId)
+    {
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+
+        if (user == null) return BadRequest("Could not find user");
+
+        var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
+
+        if (photo == null || photo.IsMain) return BadRequest("Cannot use this as main photo");
+
+        var currentMain = user.Photos.FirstOrDefault(x => x.IsMain);
+        if (currentMain != null) currentMain.IsMain = false;
+        photo.IsMain = true;
+
+        if (await userRepository.SaveAllAsync()) return NoContent();
+
+        return BadRequest("Problem setting main photo");
+    }
+
 
 }
